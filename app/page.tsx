@@ -1,16 +1,26 @@
 "use client";
 import AbilityScore from "@/components/AbilityScore/AbilityScore";
 import { K_ABILITIES, K_DEFAULT_CHAR_DATA } from "@/components/Constants";
-import PowerSection from "@/components/PowerSection";
+import DefenseSection from "@/components/Defenses/DefenseSection";
+import FeatSection from "@/components/Feats/FeatSection";
+import HpSection from "@/components/HP/HpSection";
+import InvSection from "@/components/Inventory/InventorySection";
+import PowerSection from "@/components/Powers/PowerSection";
 import SkillSection from "@/components/Skills/SkillSection";
+
+
 // import Image from "next/image";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 
 export default function Home() {
 
-  const [charState, setCharState] = useState(K_DEFAULT_CHAR_DATA)
-  const [isReady, setIsReady] = useState(0)
-  const [showAbiDetail, setShowAbiDetail] = useState(false)
+  const [charState, setCharState] = useState(() => {
+    const string = localStorage.getItem("charData")
+    const data = string ? JSON.parse(string) : K_DEFAULT_CHAR_DATA
+    return data
+  })
+  // const [isReady, setIsReady] = useState(0)
+
   const setCharName = (val: string) => {
     setCharState({
       ...charState,
@@ -29,109 +39,85 @@ export default function Home() {
       background: val
     })
   } 
-  const setCharClass = (val: string) => {
-    setCharState({
-      ...charState,
-      class: val
-    })
-  }
+
   const setCharLevel = (val: number) => {
     setCharState({
       ...charState,
       level: val,
-      levelBonus: Math.ceil(val/2)
+      levelBonus: Math.floor(val/2)
     })
   } 
 
-  const setFeat = (val: string) => {
-    setCharState({
-      ...charState,
-      feats: val
-    })
+  useEffect(
+    () => localStorage.setItem("charData", JSON.stringify(charState)), 
+    [charState]
+  )
+
+  const downloadFile = () => {
+    const fileName = charState.name;
+    const json = JSON.stringify(charState, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const href = URL.createObjectURL(blob);
+
+    // create "a" HTLM element with href to file
+    const link = document.createElement("a");
+    link.href = href;
+    link.download = fileName + ".json";
+    document.body.appendChild(link);
+    link.click();
+
+    // clean up "a" element & remove ObjectURL
+    document.body.removeChild(link);
+    URL.revokeObjectURL(href);
   }
 
-  const copyCharState = () =>  {navigator.clipboard.writeText(JSON.stringify(charState))}
-
-  useEffect(() => {
-    const charData = {...K_DEFAULT_CHAR_DATA}
-    K_ABILITIES.forEach((abi) => {
-      charData.abilities[abi].value = Object.keys(charData.abilities[abi].sources).reduce((a,v) => a = a + charData.abilities[abi].sources[v], 0)
-      charData.abilities[abi].mod = Math.ceil((charData.abilities[abi].value-10)/2)
-    })
-    charData.levelBonus = Math.ceil(charData.level/2)
-    setCharState({...charData})
-    setIsReady(1)
-  },[])
-  const [ac, setAc] = useState(10)
-  const [ref, setRef] = useState(10)
-  const [will, setWill] = useState(10)
-  const [fort, setFort] = useState(10)
-
-  if(!isReady) return <></>
+  // if(!isReady) return <></>
+  const handleUpload = (e:ChangeEvent<HTMLInputElement>) => {
+    const fileReader = new FileReader();
+    const {files} = e.target
+    if (!files) return
+    fileReader.readAsText(files[0], "UTF-8");
+    fileReader.onload = ev => {
+      if (!ev) return
+      if (!ev.target) return
+      if (!ev.target.result) return
+      setCharState({...JSON.parse(ev.target.result as string)})
+    };
+  };
   
   return (
-    <main className="flex min-h-screen flex-col items-center py-12">
+    <main className="flex min-h-screen flex-col items-center py-12 [&>*]:rounded-lg [&>1]:rounded">
+      <input onChange={handleUpload} className="block w-60 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" aria-describedby="file_input_help" id="file_input" type="file"></input>
       <input
         value={charState.name}
         className=" bg-transparent p-4 text-center text-4xl"
         onChange={(e) => setCharName(e.target.value)}
       />
-      <div className="grid max-w-sm grid-cols-2">
-        <input
-          value={charState.race}
-          className=" bg-transparent text-center text-md mx-2"
-          onChange={(e) => setCharRace(e.target.value)}
-        />
+      <div className="my-1">
         <input
           value={charState.background}
-          className=" bg-transparent text-center text-md mx-2"
+          placeholder="Race/Background/Theme"
+          className="w-60 bg-transparent text-center text-md mx-2"
           onChange={(e) => setCharBg(e.target.value)}
         />
       </div>
-      <div className="grid max-w-sm grid-cols-2">
-      <input
-          value={charState.class}
-          className=" bg-transparent text-right text-md mx-2"
-          onChange={(e) => setCharClass(e.target.value)}
+      <div className="my-1">
+        <input
+          value={charState.className}
+          placeholder="Class"
+          className="w-40 bg-transparent text-center text-md mx-2"
+          onChange={(e) => setCharBg(e.target.value)}
         />
+      </div>
+      <div className="max-w-sm">
         <input
           value={charState.level}
-          className=" bg-transparent text-left text-md mx-2"
+          className="w-8 bg-transparent text-center text-md mx-2"
           onChange={(e) => setCharLevel(Number(e.target.value))}
         />
       </div>
-      <div
-        className="cursor-pointer group text-centerrounded-lg border border-transparent py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-      >
-        <h2 className="m-0 text-2xl font-semibold text-center">HP</h2>
-        <input className="m-0 rounded-md max-w-[30ch] w-20 text-2xl opacity-100 text-center bg-gray-600" onChange={(e) => setAc(Number(e.target.value))}/>
-      </div>
-      <div className="grid grid-cols-4 max-w-6xl">
-        <div
-          className="cursor-pointer group text-centerrounded-lg border border-transparent py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-        >
-          <h2 className="m-0 text-2xl font-semibold text-center">AC</h2>
-          <input className="m-0 rounded-md max-w-[30ch] w-20 text-2xl opacity-100 text-center bg-gray-600" onChange={(e) => setAc(Number(e.target.value))}/>
-        </div>
-        <div
-          className="cursor-pointer group text-centerrounded-lg border border-transparent py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-        >
-          <h2 className="m-0 text-2xl font-semibold text-center">Fort</h2>
-          <input className="m-0 rounded-md max-w-[30ch] w-20 text-2xl opacity-100 text-center bg-gray-600" onChange={(e) => setFort(Number(e.target.value))}/>
-        </div>
-        <div
-          className="cursor-pointer group text-centerrounded-lg border border-transparent py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-        >
-          <h2 className="m-0 text-2xl font-semibold text-center">Ref</h2>
-          <input className="m-0 rounded-md max-w-[30ch] w-20 text-2xl opacity-100 text-center bg-gray-600" onChange={(e) => setRef(Number(e.target.value))}/>
-        </div>
-        <div
-          className="cursor-pointer group text-centerrounded-lg border border-transparent py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-        >
-          <h2 className="m-0 text-2xl font-semibold text-center">Will</h2>
-          <input className="m-0 rounded-md max-w-[30ch] w-20 text-2xl opacity-100 text-center bg-gray-600" onChange={(e) => setWill(Number(e.target.value))}/>
-        </div>
-      </div>
+      <HpSection charState={charState} setCharState={setCharState}/>
+      <DefenseSection charState={charState} setCharState={setCharState}/>
       <div className="grid text-center max-w-6xl grid-cols-6">
         {Object.keys(charState.abilities).map((key) => (
           <AbilityScore 
@@ -140,14 +126,17 @@ export default function Home() {
             ability={charState.abilities[key]}
             setCharState={setCharState} 
             charState={charState}
-            showAbiDetail={showAbiDetail}
+            showAbiDetail={true}
           />
         ))}
       </div>
       <PowerSection charState={charState} setCharState={setCharState}/>
-      <textarea value={charState.feats} className="w-full h-20 max-w-6xl bg-gray-600" onChange={e => setFeat(e.target.value)}/>
+      {/* <textarea value={charState.feats} className="w-full h-20 max-w-6xl bg-gray-600" onChange={e => setFeat(e.target.value)}/> */}
+      <FeatSection charState={charState} setCharState={setCharState}/>
       <SkillSection charState={charState} setCharState={setCharState}/>
-      <button onClick={copyCharState}>CLICK ME</button>
+      <InvSection charState={charState} setCharState={setCharState}/>
+      <button onClick={downloadFile}>Download Data</button>
+      {/* <button onClick={onClickSaveChar}>Save</button> */}
     </main>
   );
 }
