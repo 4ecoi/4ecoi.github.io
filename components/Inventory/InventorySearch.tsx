@@ -1,21 +1,18 @@
-import { CharData } from "@/types/global";
-import { Dispatch, SetStateAction, useMemo, useState } from "react";
-import { K_DEFAULT_TRANS } from "../Constants";
-import TransCard from "./TransactionCard";
+import React from "react";
+import { CharContext } from "@/app/context";
+import { useContext, useState } from "react";
+import { Item } from "@/types/global";
 
-interface Props{
-  charState: CharData
-  setCharState: Dispatch<SetStateAction<CharData>>
-}
-
-export default function InvSearch({charState, setCharState}: Props){
+export default function InvSearch(){
   const [searchString, setSearchString] = useState("")
-  const [searchArr, setSearchArr] = useState<any[]>([])
+  const [searchArr, setSearchArr] = useState<Item[]>([])
+
+  const {charData} = useContext(CharContext)
 
   const onChangeSearchString = (str: string) => {
     setSearchString(str)
     const searchRes: {[key: string]: number} = {}
-    const filteredItems = charState.transactions.filter(trans => trans.item.toLowerCase().indexOf(str.toLowerCase()) > -1)
+    const filteredItems = charData.transactions.filter(trans => trans.item.toLowerCase().indexOf(str.toLowerCase()) > -1)
     filteredItems.forEach((trans) => {
       if (!searchRes[trans.item]) {searchRes[trans.item] = trans.amt}
       else (searchRes[trans.item] += trans.amt)
@@ -26,10 +23,10 @@ export default function InvSearch({charState, setCharState}: Props){
 
   return (
     <div className="my-2">
-      <input value={searchString} placeholder="Item Search" onChange={(e) => onChangeSearchString(e.target.value)} className="text-center bg-transparent border border-white"/>
+      <input value={searchString} placeholder="Item Search" onChange={(e) => onChangeSearchString(e.target.value)} className="text-center parchment-bg border border-white"/>
       {
         searchString ? 
-        searchArr.map(item => <p>{item.name} x {item.amt}</p>) :
+        searchArr.map((item, n) => <p key={n}>{item.name} x {item.amt}</p>) :
         null
       }
     </div>

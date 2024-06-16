@@ -1,15 +1,12 @@
-import { CharData, Skill } from "@/types/global"
-import { Dispatch, SetStateAction, useMemo, useState } from "react"
+import React from "react";
+import { CharContext } from "@/app/context"
+import { useContext, useMemo, useState } from "react"
 import ReactModal from "react-modal"
 import { K_ABILITIES } from "../Constants"
-import { IoMdOpen } from "react-icons/io";
 
 
 interface Props {
   skillName: string
-  skill: Skill
-  setCharState: Dispatch<SetStateAction<CharData>>
-  charState: CharData
 }
 
 const customStyles = {
@@ -24,8 +21,11 @@ const customStyles = {
   },
 };
 
-export default function SkillRow({skillName, skill, setCharState, charState}: Props) {
+export default function SkillRow({skillName}: Props) {
   const [modalIsOpen, setIsOpen] = useState(false);
+  const {charData, setCharData} = useContext(CharContext)
+
+  const skill = charData.skills[skillName]
 
   function openModal() {
     setIsOpen(true);
@@ -36,35 +36,35 @@ export default function SkillRow({skillName, skill, setCharState, charState}: Pr
   }
 
   const changeAbility = (value: string) => {
-    const updatedChar = {...charState}
+    const updatedChar = {...charData}
     updatedChar.skills[skillName].ability = value
-    setCharState({...updatedChar})
+    setCharData({...updatedChar})
   }
   const changeTrained = () => {
-    const updatedChar = {...charState}
+    const updatedChar = {...charData}
     updatedChar.skills[skillName].trained = !updatedChar.skills[skillName].trained
-    setCharState({...updatedChar})
+    setCharData({...updatedChar})
   }
   const changeFeat = (value: number) => {
-    const updatedChar = {...charState}
+    const updatedChar = {...charData}
     updatedChar.skills[skillName].feat = value
-    setCharState({...updatedChar})
+    setCharData({...updatedChar})
   }
   const changeItem = (value: number) => {
-    const updatedChar = {...charState}
+    const updatedChar = {...charData}
     updatedChar.skills[skillName].item = value
-    setCharState({...updatedChar})
+    setCharData({...updatedChar})
   }
   const changeUntyped = (value: number) => {
-    const updatedChar = {...charState}
+    const updatedChar = {...charData}
     updatedChar.skills[skillName].untyped = value
-    setCharState({...updatedChar})
+    setCharData({...updatedChar})
   }
   const skillMod = useMemo(() => (
     skill.trained ?
-    (charState.abilities[skill.ability].mod + charState.levelBonus + skill.feat + skill.item + skill.untyped + 5) :
-    (charState.abilities[skill.ability].mod + charState.levelBonus + skill.feat + skill.item + skill.untyped)
-  ), [charState])
+    (charData.abilities[skill.ability].mod + charData.levelBonus + skill.feat + skill.item + skill.untyped + 5) :
+    (charData.abilities[skill.ability].mod + charData.levelBonus + skill.feat + skill.item + skill.untyped)
+  ), [charData, skill])
   const skillCheck = () => {navigator.clipboard.writeText(`[[d20+${skillMod} ${skillName} check]]`)}
   
   return (
@@ -79,13 +79,13 @@ export default function SkillRow({skillName, skill, setCharState, charState}: Pr
         style={customStyles}
         ariaHideApp={false}
       >
-        <div className=" max-w-60 bg-gray-600 text-center p-2">
+        <div className=" max-w-60 parchment-bg text-center p-2">
           <div className="grid grid-cols-2">
             <div>
               Ability
             </div>
             <select 
-              className="mx-2  bg-gray-600"
+              className="mx-2  parchment-bg"
               value={skill.ability}
               onChange={(e) => changeAbility(e.target.value)}
             >
@@ -102,19 +102,19 @@ export default function SkillRow({skillName, skill, setCharState, charState}: Pr
             <div>
               Feat
             </div>
-            <input className="mx-2  bg-gray-600 text-center" onChange={(e) => changeFeat(Number(e.target.value))} value={skill.feat} />
+            <input className="mx-2  parchment-bg text-center" onChange={(e) => changeFeat(Number(e.target.value))} value={skill.feat} />
           </div>
           <div className="grid grid-cols-2">
             <div>
               Item
             </div>
-            <input className="mx-2  bg-gray-600 text-center" onChange={(e) => changeItem(Number(e.target.value))} value={skill.item} />
+            <input className="mx-2  parchment-bg text-center" onChange={(e) => changeItem(Number(e.target.value))} value={skill.item} />
           </div>
           <div className="grid grid-cols-2">
             <div>
               Etc
             </div>
-            <input className="mx-2  bg-gray-600 text-center" onChange={(e) => changeUntyped(Number(e.target.value))} value={skill.untyped} />
+            <input className="mx-2  parchment-bg text-center" onChange={(e) => changeUntyped(Number(e.target.value))} value={skill.untyped} />
           </div>
         </div>
       </ReactModal>

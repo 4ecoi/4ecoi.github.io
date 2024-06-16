@@ -1,25 +1,19 @@
-import { CharData } from "@/types/global";
-import { Dispatch, SetStateAction } from "react";
+import React from "react";
 import { K_SKILLS } from "../Constants";
 import SkillRow from "./SkillRow";
+import CollapsibleSection from "../Shared/CollapsibleSection";
 
-interface Props{
-  charState: CharData
-  setCharState: Dispatch<SetStateAction<CharData>>
-}
 
-export default function SkillSection({charState, setCharState}: Props){
+
+export default function SkillSection(){
   return (
-    <>
+    <CollapsibleSection headerTitle="Skills">
       {K_SKILLS.map((key) => (
         <SkillRow
           key={key} 
           skillName={key}
-          skill={charState.skills[key]}
-          setCharState={setCharState}
-          charState={charState}
         />
       ))}
-    </>
+    </CollapsibleSection>
   )
 }

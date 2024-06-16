@@ -63,17 +63,19 @@ export const K_DEFAULT_POWER: Power = {
   "name": "",
   "ability": "STR",
   "weapon": 0,
-  "atkRoll": 'd20',
+  "atkBonus": 0,
   "freq": 'ATWILL',
   "dmgBonus": '0',
   "wpnMult": 0,
-  "desc": "power description",
-  "target": "ac"
+  "desc": "",
+  "target": "ac",
+  "isDamage": true,
+  "abiToDamage": true
 }
 
 export const K_DEFAULT_CONDITION: CondMod = {
   "name": "",
-  "atkBonus": "",
+  "atkBonus": 0,
   "dmgBonus": "",
   "isActive": false,
 }
@@ -110,15 +112,15 @@ export const K_DEFAULT_DEF_BONUS_ARRAY: DefBonus[] = [
 ]
 
 export const K_DEFAULT_CHAR_DATA: CharData = {
-  "name": "Name", 
-  "class": "Class",
-  "background": "Background",
+  "name": "", 
+  "class": "",
+  "background": "",
   "hpBase": 10,
   "hpPerLevel": 4,
   "baseHs": 0,
   "ausp": false,
   "level": 1,
-  "levelBonus": 1, 
+  "levelBonus": 0, 
   "defBonus": {
     "AC": [
       {type: "Armor", value: 0},
@@ -157,60 +159,67 @@ export const K_DEFAULT_CHAR_DATA: CharData = {
       {type: "Untyped", value: 0},
     ],
   },
-  "race": "Race",
+  "race": "",
+  "initiative": {
+    "ability": "DEX",
+    "trained": false,
+    "feat": 0,
+    "item": 0,
+    "untyped": 0,
+  },
   "abilities": {
     "STR": {
       "value": 10,
       "mod": 0,
       "sources": {
-        "base": 10,
-        "race": 0,
-        "asi": 0
+        "Base": 10,
+        "Race": 0,
+        "ASI": 0
       }
     },
     "DEX": {
       "value": 10,
       "mod": 0,
       "sources": {
-        "base": 10,
-        "race": 0,
-        "asi": 0
+        "Base": 10,
+        "Race": 0,
+        "ASI": 0
       }
     },
     "CON": {
       "value": 0,
       "mod": 0,
       "sources": {
-        "base": 10,
-        "race": 0,
-        "asi": 0
+        "Base": 10,
+        "Race": 0,
+        "ASI": 0
       }
     },
     "INT": {
       "value": 0,
       "mod": 0,
       "sources": {
-        "base": 10,
-        "race": 0,
-        "asi": 0
+        "Base": 10,
+        "Race": 0,
+        "ASI": 0
       }
     },
     "WIS": {
       "value": 0,
       "mod": 0,
       "sources": {
-        "base": 10,
-        "race": 0,
-        "asi": 0
+        "Base": 10,
+        "Race": 0,
+        "ASI": 0
       }
     },
     "CHA": {
       "value": 0,
       "mod": 0,
       "sources": {
-        "base": 10,
-        "race": 0,
-        "asi": 0
+        "Base": 10,
+        "Race": 0,
+        "ASI": 0
       }
     },
   },
@@ -300,7 +309,7 @@ export const K_DEFAULT_CHAR_DATA: CharData = {
       "untyped": 0,
     },
     "Perception": {
-      "ability": "CHA",
+      "ability": "WIS",
       "trained": false,
       "feat": 0,
       "item": 0,
@@ -342,4 +351,4 @@ export const K_DEFAULT_CHAR_DATA: CharData = {
   "condMod": []
 }
 
-export const K_INPUT_CLASSNAME = "text-center bg-gray-600 p-2"
+export const K_INPUT_CLASSNAME = "text-center parchment-bg p-2"

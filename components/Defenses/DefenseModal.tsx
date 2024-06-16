@@ -1,64 +1,53 @@
-import { Dispatch, SetStateAction, useState } from "react"
-import Modal from 'react-modal';
-// import CatalogCarousel from "./CatalogCarousel";
-import { CharData, DefBonus } from "@/types/global"
+import React from "react";
+import { Dispatch, SetStateAction, useContext } from "react"
+import { DefBonus } from "@/types/global"
 import { K_DEFENSES } from "../Constants"
-
-const customStyles = {
-  content: {
-    top: '50%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    marginRight: '-50%',
-    transform: 'translate(-50%, -50%)',
-    padding: '0',
-  },
-};
-
+import DialogDefault from "../Shared/Dialog";
+import { CharContext } from "@/app/context";
+import { isNumString } from "../Shared/Functions";
 interface Props {
-  setCharState: Dispatch<SetStateAction<CharData>>
-  charState: CharData
   defName: typeof K_DEFENSES[number]
   defBonusArray: DefBonus[]
-  closeModal: () => void
+  setIsOpen: Dispatch<SetStateAction<boolean>>
+  isOpen: boolean
 }
 
 
-export default function DefenseModal({setCharState, charState, defName, defBonusArray, closeModal}: Props) {
+export default function DefenseModal({defName, defBonusArray, setIsOpen, isOpen}: Props) {
+  const {charData, setCharData} = useContext(CharContext)
 
   const changeBonusVal = (val: number, index: number) => {
-    const updatedChar = {...charState}
+    if(!isNumString(val)) return
+    const updatedChar = {...charData}
     updatedChar.defBonus[defName][index].value=val
-    setCharState({...updatedChar})
+    setCharData({...updatedChar})
   }
 
   return (
-      <Modal
-        isOpen={true}
-        onRequestClose={closeModal}
-        style={customStyles}
-        ariaHideApp={false}
+    <>
+      <DialogDefault
+        isOpen={isOpen}
+        setOpen={setIsOpen}
+        headerTitle={defName}
       >
-        <div className=" max-w-60 bg-gray-600 p-2">
+        <div className="flex flex-col items-center max-w-60 parchment-bg p-2 mx-auto">
           {
             defBonusArray.map((bonus, index) => 
             <div className="grid grid-cols-2 text-right" key={index}>
               <div
-                className=" bg-gray-600 p-2"
+                className=" parchment-bg p-2"
               >
-                {bonus.type}
+                {bonus.type}:
               </div>
               <input
                 value={bonus.value}
-                type="number"
-                className=" bg-gray-600 p-2"
+                className=" parchment-bg p-2 border-none"
                 onChange={(e) => changeBonusVal(Number(e.target.value), index)}
               />
-            </div>
-          )
+            </div>)
           }
         </div>
-      </Modal>
+      </DialogDefault>
+    </>
   );
 }

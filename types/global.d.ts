@@ -1,17 +1,7 @@
 import { K_ABILITIES, K_DEFENSES, K_POWER_FREQUENCY, K_SKILLS } from "@/components/Constants"
-import { Interface } from "readline"
 
 
 export interface DefBonus {type: string, value: number}
-// {
-//   armor: number
-//   class: number
-//   race: number
-//   ench: number
-//   feat: number
-//   item: number
-//   untyped: number
-// }
 
 export interface Transaction {
   time: string
@@ -28,7 +18,7 @@ export interface Feat {
 
 export interface CondMod {
   name: string
-  atkBonus: string
+  atkBonus: number
   dmgBonus: string
   isActive: boolean 
 }
@@ -39,7 +29,9 @@ export interface Power {
   "weapon": number
   "freq": typeof K_POWER_FREQUENCY[number]
   "target": typeof K_DEFENSES[number]
-  "atkRoll": string
+  "isDamage": boolean
+  "abiToDamage": boolean
+  "atkBonus": number
   "desc": string
   "dmgBonus": string
   "wpnMult": number
@@ -62,6 +54,7 @@ export interface CharData {
   feats: Feat[]
   weapons: Weapon[]
   powers: Power[]
+  initiative: Skill
   transactions: Transaction[]
   condMod: CondMod[]
 }
@@ -90,4 +83,9 @@ export interface Weapon {
   "desc": string
   "dmgDice": string
   "dmgBonus" : number
+}
+
+export interface Item {
+  "name": string,
+  "amt": number
 }

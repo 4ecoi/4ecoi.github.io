@@ -1,36 +1,32 @@
-import { CharData, DefBonus } from "@/types/global"
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react"
+import React from "react"
+import { CharContext } from "@/app/context"
+import { useContext, useState } from "react"
 import { K_ABILITIES_BY_DEFENSES, K_DEFENSES } from "../Constants"
 import DefenseModal from "./DefenseModal"
 
 
 interface Props {
-  setCharState: Dispatch<SetStateAction<CharData>>
-  charState: CharData
   defName: typeof K_DEFENSES[number]
-  defBonusArray: DefBonus[]
 }
-export default function DefenseCard({setCharState, charState, defName, defBonusArray}: Props) {
+export default function DefenseCard({defName}: Props) {
   const [modalIsOpen, setIsOpen] = useState(false);
+  const {charData} = useContext(CharContext)
+
+  const defBonusArray= charData.defBonus[defName]
 
   function openModal() {
     setIsOpen(true);
   }
 
-  function closeModal() {
-    setIsOpen(false);
-  }
-
-  const modBonus = (defBonusArray.find(def => def.type === "Armor")?.value as Number > 5) ? 
+  const modBonus = (defBonusArray.find(def => def.type === "Armor")?.value as number > 5) ? 
     0 :
-    Math.max(...K_ABILITIES_BY_DEFENSES[defName].map(def => charState.abilities[def].mod))
+    Math.max(...K_ABILITIES_BY_DEFENSES[defName].map(def => charData.abilities[def].mod))
 
-  let defTotal = defBonusArray.reduce((a,v) => a+v.value, 10) + modBonus
-  let tooltip = `Mod: ${modBonus}\n${defBonusArray.reduce((a,v) => `${a+v.type+`: `+v.value+`\n`}`, '')}`
+  const defTotal = defBonusArray.reduce((a,v) => a+v.value, 10) + modBonus
   return (
     <div>
       <div
-        className="group relative flex justify-center cursor-pointer rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
+        className="group relative flex justify-center cursor-pointer rounded-lg border border-transparent px-5 transition-colors"
         onClick={() => openModal()}
       >
         <div>
@@ -41,13 +37,8 @@ export default function DefenseCard({setCharState, charState, defName, defBonusA
             {defTotal}
           </p>
         </div>
-        <div style={{whiteSpace: "pre-wrap"}} className="absolute top-20 scale-0 rounded bg-gray-600/50 p-2 w-24 text-xs text-white group-hover:scale-100">{tooltip}</div>
       </div>
-      {
-        modalIsOpen ?
-        <DefenseModal setCharState={setCharState} charState={charState} defName={defName} defBonusArray={defBonusArray} closeModal={closeModal}/> :
-        null
-      }
+      <DefenseModal defName={defName} defBonusArray={defBonusArray} isOpen={modalIsOpen} setIsOpen={setIsOpen}/>
     </div>
   )
 }
