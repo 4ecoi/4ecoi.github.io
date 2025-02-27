@@ -15,12 +15,13 @@ export default function FeatSection(){
   }
 
   return (
-    <CollapsibleSection headerTitle="Feats" appendFunction={addFeat}>
+    <CollapsibleSection headerTitle="Feats">
       <div className="flex flex-wrap justify-center">
         {charData.feats.map((_, index) => (
           <FeatCard index={index} key={index} />
         ))}
       </div>
+      <button className="darkwood p-2 rounded-md" onClick={addFeat}> Add Feat </button>
     </CollapsibleSection>
   )
 }

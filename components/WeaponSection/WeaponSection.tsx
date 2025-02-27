@@ -14,12 +14,13 @@ export default function WeaponSection(){
     })
   }, [charData, setCharData])
   return (
-    <CollapsibleSection headerTitle="Weapons" appendFunction={addWeapon}>
+    <CollapsibleSection headerTitle="Weapons">
       <div className="flex flex-wrap justify-center m-8">
         {charData.weapons.map((_, index) => (
           <WeaponCard index={index} key={index} />
         ))}
       </div>
+      <button className="darkwood p-2 rounded-md" onClick={addWeapon}> Add Weapon </button>
     </CollapsibleSection>
   )
 }

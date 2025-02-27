@@ -16,13 +16,13 @@ export default function CollapsibleSection({headerTitle, appendFunction, childre
 
   return (
     <div className="mx-4 flex-row justify-center rounded-md my-2 w-11/12">
-      <div className={`flex w-full my-auto text-center darkwood ${isVisible ? "rounded-t-md" : "rounded-md"} p-2 justify-center items-center relative`}>
+      <div className={`flex w-full my-auto text-center darkwood ${isVisible ? "rounded-t-md" : "rounded-md"} p-2 justify-center items-center relative`} onClick={() => setVisible(!isVisible)}>
         <h2 className="text-2xl">{headerTitle}</h2>
         {
           appendFunction ?
           <FaPlus onClick={appendFunction} className="my-auto mx-1 cursor-pointer" /> : null
         }
-        <button className="absolute right-0 darkwood mx-2 border-none" onClick={() => setVisible(!isVisible)}>{isVisible ?<FaChevronDown className="fa-3xl"/> : <FaChevronRight className="fa-3xl"/>}</button>
+        <button className="absolute right-0 darkwood mx-2 border-none">{isVisible ?<FaChevronDown className="fa-3xl"/> : <FaChevronRight className="fa-3xl"/>}</button>
       </div>
       <div className="overflow-hidden">
         <Transition

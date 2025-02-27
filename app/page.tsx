@@ -20,13 +20,15 @@ import { CharContext } from "./context";
 
 export default function Home() {
   const [charData, setCharData] = useState<CharData>(K_DEFAULT_CHAR_DATA)
+  const [diceRoom, setDiceRoom] = useState("")
+  const [discordUname, setDiscordUname] = useState("")
   const [isAutoSave, setIsAutosave] = useState(false)
   // const [isReady, setIsReady] = useState(0)
-  useEffect(() => {
-    const string = global?.localStorage?.getItem("charData")
-      if(string) setCharData(JSON.parse(string))
-      setIsAutosave(true)
-    }, [isAutoSave])
+  // useEffect(() => {
+  //   const string = global?.localStorage?.getItem("charData")
+  //     if(string) setCharData(JSON.parse(string))
+  //     setIsAutosave(true)
+  //   }, [isAutoSave])
 
   const setCharName = (val: string) => {
     setCharData({
@@ -58,7 +60,7 @@ export default function Home() {
   } 
 
   useEffect(
-    () => {if(isAutoSave) global?.localStorage?.setItem("charData", JSON.stringify(charData))}, 
+    () => {if(isAutoSave) localStorage?.setItem("charData", JSON.stringify(charData))}, 
     [charData, isAutoSave]
   )
 
@@ -95,9 +97,10 @@ export default function Home() {
   };
 
   return (
-    <CharContext.Provider value={{charData, setCharData}}>
+    <CharContext.Provider value={{charData, setCharData, diceRoom, setDiceRoom, discordUname, setDiscordUname}}>
       <main className="parchment-bg flex flex-col items-center py-2 [&>*]:rounded-lg [&>1]:rounded">
         <input onChange={handleUpload} className=" my-2 block w-42 text-sm border rounded-lg cursor-pointer text-gray-400 focus:outline-none darkwood border-gray-600 placeholder-gray-400" aria-describedby="file_input_help" id="file_input" type="file"></input>
+        <input onChange={(e) => setDiceRoom(e.target.value)} value={diceRoom}/>
         <input
           value={charData.name}
           className="parchment-bg text-center text-2xl border-none w-11/12"
@@ -122,6 +125,10 @@ export default function Home() {
             className="w-8 parchment-bg text-center text-md mx-2 border-none"
             onChange={(e) => setCharLevel(e.target.value)}
           />
+        </div>
+        <div className="grid grid-cols-2">
+          <input value={diceRoom} placeholder="Discord room link" onChange={(e) => setDiceRoom(e.target.value)}/>
+          <input value={discordUname} placeholder="Discord username" onChange={(e) => setDiscordUname(e.target.value)}/>
         </div>
         <HpSection/>
         <DefenseSection/>

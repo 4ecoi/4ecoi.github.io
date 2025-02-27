@@ -14,13 +14,25 @@ interface Props{
   toggleCondActive: (condIndex: number) => void
 }
 export default function PowerCard({index, activeConditions}: Props){
-  const {charData, setCharData} = useContext(CharContext)
+  const {charData, setCharData, discordUname, diceRoom} = useContext(CharContext)
 
   const power: Power = charData.powers[index]
   const [targets, setTargets] = useState("")
   const [showDetail, setShowDetail] = useState(false)
   const [isAvail, setIsAvail] = useState(true)
   const [showTooltip, setShowTooltip]= useState(false)
+  const postDiceRoll = (val: string) => {
+    fetch('https://api.pnp-rpg.site/roll', {
+      method: 'POST',
+      headers: {"accept": 'application/json', "Content-Type": 'application/json'},
+      body: JSON.stringify({
+        "dump_channel_link": diceRoom,
+        "message": val,
+        "username": discordUname,
+      })
+    })
+  }
+
   const changePowerName = (val: string) => {
     const updatedChar = {...charData}
     updatedChar.powers[index].name = val
@@ -78,7 +90,7 @@ export default function PowerCard({index, activeConditions}: Props){
     res += Number(powerWeapon.atkBonus + powerWeapon.enhc)
     activeConditions.forEach(cond => {res += Number(cond.atkBonus)})
     return res
-  }, [charData])
+  }, [activeConditions, powerWeapon])
 
   const extDmgBonus = useMemo(() => {
     let staticBonus = 0
@@ -89,7 +101,7 @@ export default function PowerCard({index, activeConditions}: Props){
       else string += `+${cond.dmgBonus}`
     })
     return `${staticBonus+string}`
-  }, [charData]) 
+  }, [activeConditions, powerWeapon]) 
 
   const usePower = () => {
     let text = ""
@@ -99,11 +111,10 @@ export default function PowerCard({index, activeConditions}: Props){
       if(tar.includes("^")) text += "[[2d20kh1"
       else text+="[[d20"
 
-      text += extAtkBonus + power.atkBonus
+      text += `+${extAtkBonus + power.atkBonus}`
+      if(tar.includes("+")) text += (`+2`)
 
-      if(tar.includes("+")) text += (`+2 vs ${power.target} ${tar.substring(0, tar.length -1)}`)
-      
-      text += ` vs ${power.target} ${tar.replace(/[^a-z0-9-]/g, '')}]]`
+      text += ` vs ${power.target} ${tar.replace(/[^a-z0-9-]/g, '')}]]\n`
     })
 
     if (power.wpnMult || (power.dmgBonus && power.dmgBonus !== "0")) {
@@ -119,16 +130,7 @@ export default function PowerCard({index, activeConditions}: Props){
     text += (`\n ${power.desc}`)
     navigator.clipboard.writeText(text)
     if(power.freq == "ENC" || power.freq == "DLY") setIsAvail(!isAvail)
-    fetch('https://discord.com/api/webhooks/1251017102568198275/s5LuV6PMHglvYKGqP3VABn4KXCkhW0_J_26ga2igrDccRo3tYELLSVx3kEVZbqDBQCaR', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        content: 'ahoy'
-      })
-    })
+    postDiceRoll(text)
   }
 
   const removePower = () => {

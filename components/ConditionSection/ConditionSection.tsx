@@ -15,12 +15,13 @@ export default function ConditionSection(){
   }
   
   return (
-    <CollapsibleSection headerTitle="Conditions" appendFunction={addCond}>
-      <div className="flex flex-wrap justify-center m-8">
+    <CollapsibleSection headerTitle="Modifiers">
+      <div className="flex flex-wrap justify-center">
         {charData.condMod.map((_, index) => (
           <CondCard index={index} key={index} />
         ))}
       </div>
+      <button className="darkwood p-2 rounded-md" onClick={addCond}> Add Modifiers </button>
     </CollapsibleSection>
   )
 }

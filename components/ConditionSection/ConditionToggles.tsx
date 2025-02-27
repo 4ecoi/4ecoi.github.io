@@ -1,5 +1,5 @@
 import { CharContext } from "@/app/context";
-import React, { useContext } from "react";
+import React, { LegacyRef, useContext } from "react";
 
 
 const ConditionToggles = React.forwardRef((_, forwardedRef) => {
@@ -13,7 +13,7 @@ const ConditionToggles = React.forwardRef((_, forwardedRef) => {
 
   return (
     <div
-      ref={forwardedRef}
+      ref={forwardedRef as LegacyRef<HTMLDivElement>}
     >
       conditions:
       <div className="flex px-2 w-full flex-row flex-wrap">

@@ -24,12 +24,13 @@ export default function PowerSection(){
   }, [charData, setCharData])
 
   return (
-    <CollapsibleSection headerTitle="Powers" appendFunction={addPower} openDefault>
+    <CollapsibleSection headerTitle="Powers" openDefault>
       <div className="flex flex-wrap justify-center">
         {charData.powers.map((_, index) => (
           <PowerCard index={index} key={index}  activeConditions={activeConditions} toggleCondActive={toggleCondActive} />
         ))}
       </div>
+      <button className="darkwood p-2 rounded-md" onClick={addPower}> Add Power </button>
     </CollapsibleSection>
   )
 }
